@@ -6,8 +6,13 @@ from langchain_core.documents import Document
 from langchain_community.vectorstores import Chroma
 from utils import process_text
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
-from langchain.chains import ConversationalRetrievalChain
-from langchain.memory import ConversationBufferMemory
+try:
+    from langchain.chains import ConversationalRetrievalChain, LLMChain
+    from langchain.memory import ConversationBufferMemory
+except ImportError:
+    from langchain_classic.chains import ConversationalRetrievalChain, LLMChain
+    from langchain_classic.memory import ConversationBufferMemory
+from langchain_core.prompts import PromptTemplate
 
 # Set Page Config
 st.set_page_config(
@@ -103,6 +108,41 @@ def main():
                     all_text = " ".join(df_preview['content'].astype(str).tolist())
                     words = pd.Series(all_text.lower().split()).value_counts().head(20)
                     st.bar_chart(words)
+
+            st.divider()
+            st.subheader("🤖 Analisis AI Mendalam")
+            if not openai_api_key:
+                st.info("Masukkan OpenAI API Key untuk fitur analisis mendalam.")
+            else:
+                if st.button("Generate Insight Politik"):
+                    with st.spinner("Sedang menganalisis sampel data..."):
+                        # Sample data for analysis (first 3000 chars)
+                        sample_text = all_text[:3000]
+
+                        llm = ChatOpenAI(model_name="gpt-3.5-turbo", openai_api_key=openai_api_key, temperature=0.3)
+
+                        template = """
+                        Anda adalah analis politik ahli Indonesia. Analisis teks berita berikut:
+
+                        "{text}"
+
+                        Berikan output dalam format poin-poin singkat:
+                        1. **Sentimen Umum**: (Positif/Negatif/Netral) dan penjelasannya singkat.
+                        2. **Tokoh Kunci**: Sebutkan nama tokoh politik yang muncul.
+                        3. **Isu Utama**: Apa topik politik utama yang dibahas?
+
+                        Gunakan Bahasa Indonesia.
+                        """
+
+                        prompt = PromptTemplate(template=template, input_variables=["text"])
+                        chain = LLMChain(llm=llm, prompt=prompt)
+
+                        try:
+                            result = chain.run(sample_text)
+                            st.markdown(result)
+                        except Exception as e:
+                            st.error(f"Gagal melakukan analisis: {e}")
+
         else:
             st.write("Belum ada data yang diproses.")
 
