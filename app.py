@@ -122,12 +122,13 @@ def main():
             st.warning("Silakan masukkan OpenAI API Key untuk memulai chat.")
         else:
             if docs:
-                # Process text & Setup Vector Store (Cached resource would be better but this works for demo)
-                # We use a hash of the content to check if we need to rebuild
-                # For simplicity in this demo, we rebuild if not in session state or simple check
+                # Check if we need to rebuild the vector store
+                # We use document count as a simple proxy for changes
+                current_doc_count = len(docs)
+                should_rebuild = "vectorstore" not in st.session_state or st.session_state.get("last_doc_count", 0) != current_doc_count
 
-                if "vectorstore" not in st.session_state:
-                    with st.spinner("Memproses dokumen..."):
+                if should_rebuild:
+                    with st.spinner(f"Memproses {current_doc_count} dokumen..."):
                         splits = process_text(docs)
                         embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
                         st.session_state.vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings)
@@ -138,6 +139,8 @@ def main():
                             return_source_documents=True
                         )
                         st.session_state.chat_history = []
+                        st.session_state.last_doc_count = current_doc_count
+                        st.success("Basis pengetahuan diperbarui!")
 
                 # React to user input
                 if prompt := st.chat_input("Apa yang ingin Anda ketahui tentang situasi politik?"):
