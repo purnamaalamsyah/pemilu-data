@@ -163,12 +163,13 @@ def main():
         else:
             if docs:
                 # Check if we need to rebuild the vector store
-                # We use document count as a simple proxy for changes
-                current_doc_count = len(docs)
-                should_rebuild = "vectorstore" not in st.session_state or st.session_state.get("last_doc_count", 0) != current_doc_count
+                # We use a signature of the uploaded files to detect changes
+                current_file_signature = sorted([(f.name, f.size) for f in uploaded_files]) if uploaded_files else "sample_data"
+
+                should_rebuild = "vectorstore" not in st.session_state or st.session_state.get("file_signature") != current_file_signature
 
                 if should_rebuild:
-                    with st.spinner(f"Memproses {current_doc_count} dokumen..."):
+                    with st.spinner(f"Memproses {len(docs)} dokumen..."):
                         splits = process_text(docs)
                         embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
                         st.session_state.vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings)
@@ -179,7 +180,7 @@ def main():
                             return_source_documents=True
                         )
                         st.session_state.chat_history = []
-                        st.session_state.last_doc_count = current_doc_count
+                        st.session_state.file_signature = current_file_signature
                         st.success("Basis pengetahuan diperbarui!")
 
                 # React to user input

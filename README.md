@@ -1,24 +1,52 @@
 # Political-RAG Indonesia
 
-Aplikasi berbasis web untuk ekstraksi informasi politik dari media konten menggunakan Generative AI (RAG).
+Aplikasi berbasis web untuk ekstraksi informasi politik dari media konten menggunakan Generative AI (RAG). Aplikasi ini dirancang untuk membantu analis politik, jurnalis, atau peneliti dalam memahami konteks berita politik Indonesia secara cepat dan mendalam.
 
-## Fitur
-- **Upload Data**: Mendukung format CSV, Excel, dan TXT.
-- **Analisis Insight**: Dashboard sederhana menampilkan statistik dan kata kunci.
-- **Chat RAG**: Tanya jawab interaktif dengan dokumen yang diunggah menggunakan OpenAI GPT.
-- **Konteks Indonesia**: Didesain untuk data politik Indonesia.
+## Fitur Utama
+- **Upload Data Fleksibel**: Mendukung format CSV, Excel, dan TXT (bisa banyak file sekaligus).
+- **Dashboard Analisis AI**:
+  - Statistik dasar dokumen.
+  - Visualisasi kata kunci.
+  - **Analisis Mendalam**: Menggunakan AI untuk mengekstrak Sentimen, Tokoh Kunci, dan Isu Utama dari dokumen.
+- **Chat RAG (Retrieval-Augmented Generation)**: Tanya jawab interaktif dengan dokumen Anda. Chatbot memahami konteks dokumen yang diunggah.
+- **Manajemen Memori**: Menyimpan riwayat percakapan untuk konteks diskusi yang lebih baik.
 
-## Instalasi Lokal
+## Prasyarat
+- Python 3.8 - 3.12
+- **OpenAI API Key**: Diperlukan untuk mengakses fitur Generative AI.
 
-1. Clone repositori ini.
-2. Install dependencies:
+## Panduan Instalasi & Menjalankan (Lokal)
+
+1. **Clone Repositori**
+   ```bash
+   git clone <repository-url>
+   cd political-rag-app
+   ```
+
+2. **Siapkan Environment (Opsional tapi Disarankan)**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Untuk Linux/Mac
+   # venv\Scripts\activate   # Untuk Windows
+   ```
+
+3. **Install Dependencies**
    ```bash
    pip install -r requirements.txt
    ```
-3. Jalankan aplikasi:
+
+4. **Jalankan Aplikasi**
    ```bash
    streamlit run app.py
    ```
+   Aplikasi akan terbuka di browser Anda (biasanya di `http://localhost:8501`).
+
+## Cara Menggunakan
+
+1. **Konfigurasi**: Masukkan OpenAI API Key Anda di sidebar sebelah kiri.
+2. **Upload Data**: Unggah file berita/politik (CSV, Excel, TXT). Jika tidak ada file, aplikasi akan menggunakan data sampel.
+3. **Analisis**: Buka tab "Dashboard Insight" untuk melihat ringkasan dan menekan tombol "Generate Insight Politik" untuk analisis AI.
+4. **Chat**: Buka tab "Chat RAG AI" untuk bertanya tentang dokumen yang diunggah (contoh: "Bagaimana sentimen media terhadap kandidat X?").
 
 ## Deployment
 
@@ -31,6 +59,4 @@ Cara termudah untuk men-deploy aplikasi ini adalah menggunakan [Streamlit Commun
 4. Klik **Deploy**.
 
 ### Catatan tentang Netlify
-Netlify didesain untuk hosting situs statis (HTML/CSS/JS). Aplikasi Streamlit membutuhkan server Python yang berjalan aktif (backend) untuk memproses logika AI dan data. Oleh karena itu, **Netlify tidak dapat men-host aplikasi Streamlit secara langsung** kecuali menggunakan teknik lanjutan (seperti `stlite` yang memiliki keterbatasan dengan library berat seperti ChromaDB).
-
-Disarankan menggunakan Streamlit Community Cloud, Railway, atau Render.
+Netlify didesain untuk hosting situs statis (HTML/CSS/JS). Aplikasi Streamlit membutuhkan server Python yang berjalan aktif (backend) untuk memproses logika AI dan data. Oleh karena itu, **Netlify tidak dapat men-host aplikasi Streamlit secara langsung**. Gunakan Streamlit Cloud, Railway, atau Render.
